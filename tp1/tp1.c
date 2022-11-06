@@ -287,7 +287,7 @@ void exo7(){
     }
 }
 
-void exo8(){
+void exo9(){
     /*
      * On étudie le comportement de exec
      * > exécute la commande donnée, puis quitte le programme.
@@ -307,10 +307,117 @@ void exo8(){
 }
 
 void exo10(){
-    /* TODO */
+    /*
+     * Exécution de la commande ps -l depuis un processus fils
+     */
+    int processus;
+    processus = fork();
+    if(processus == 0){
+        printf("====================================\n");
+        printf("je suis le fils\n");
+        printf("mon pid est %d\n", getpid());
+        printf("mon père a pour pid %d\n", getppid());
+        printf("je vais exécuter la commande ps -l\n");
+        execl("/bin/ps", "ps", "-l", NULL);
+        printf("je suis le fils et je meurs\n");
+        exit(1);
+    } else {
+        printf("====================================\n");
+        printf("je suis le père\n");
+        int *terminaison = malloc(sizeof(int));
+        pid_t res = waitpid(processus, terminaison, WCONTINUED);
+        printf("/// waitpid a retourné %d ///\n", res);
+        printf("avec la terminaison %d\n", *terminaison);
+        printf("qui s'interprète comme exit code %d\n", WEXITSTATUS(*terminaison));
+        free(terminaison);
+
+        exit(0);
+    }
+}
+
+void exo10b() {
+    /*
+     * Même chose, mais avec execv
+     */
+    int processus;
+    processus = fork();
+    if (processus == 0) {
+        printf("====================================\n");
+        printf("je suis le fils\n");
+        printf("mon pid est %d\n", getpid());
+        printf("mon père a pour pid %d\n", getppid());
+        printf("je vais exécuter la commande ps -l\n");
+        char *args[] = {"ps", "-l", NULL};
+        execv("/bin/ps", args);
+        printf("je suis le fils et je meurs\n");
+        exit(1);
+    } else {
+        printf("====================================\n");
+        printf("je suis le père\n");
+        int *terminaison = malloc(sizeof(int));
+        pid_t res = waitpid(processus, terminaison, WCONTINUED);
+        printf("/// waitpid a retourné %d ///\n", res);
+        printf("avec la terminaison %d\n", *terminaison);
+        printf("qui s'interprète comme exit code %d\n",
+               WEXITSTATUS(*terminaison));
+        free(terminaison);
+        exit(0);
+    }
+}
+
+void exo11(){
+    /*
+     * Interpréteur de commandes simplifié
+     * avec fork, execv et waitpid
+     * qui lit depuis l'entrée standard
+     */
+    char *commande = malloc(80 * sizeof(char));
+    char *args[80];
+    int processus;
+    processus = fork();
+    if(processus == 0){
+        printf("====================================\n");
+        printf("PID %d (père: %d)\n", getpid(), getppid());
+        printf("entrez une commande : ");
+        scanf("%[^\n]", commande);
+        if(strcmp(commande, "exit") == 0){
+            exit(1);
+        }
+        char *token = strtok(commande, " ");
+        int i = 0;
+        while(token != NULL){
+            args[i] = token;
+            token = strtok(NULL, " ");
+            i++;
+        }
+        args[i] = NULL;
+        char *path = malloc(80 * sizeof(char));
+        sprintf(path, "/bin/%s", args[0]);
+        execv(path, args);
+        printf("Commande inconnue.\n");
+        exit(1);
+    } else {
+        int *terminaison = malloc(sizeof(int));
+        pid_t res = waitpid(processus, terminaison, WCONTINUED);
+        printf("/// fin du PID %d ///\n", res);
+        printf("avec la terminaison %d (exit code %d)\n",
+               *terminaison,
+               WEXITSTATUS(*terminaison));
+        free(terminaison);
+        sleep(1);
+        if(WEXITSTATUS(*terminaison) == 1){
+            printf("Fin du programme.\n");
+            free(commande);
+            exit(0);
+        } else{
+            free(commande);
+            exo11();
+        }
+        exit(1);
+    }
 }
 
 int main(int argc, const char * argv[]) {
-    exo8();
+    exo11();
     return 0;
 }
