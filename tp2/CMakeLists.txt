@@ -5,5 +5,5 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(.)
 
-add_executable( tp1
-        tp1.c)
+add_executable(tp2
+        RDV.c)

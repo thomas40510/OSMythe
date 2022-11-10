@@ -95,8 +95,6 @@ void exo4(){
      * 1) le fils écrit puis s'endort
      * 2) le père dort puis lit, écrit et se termine
      * 3) le fils se réveille, lit et se termine
-     * > le seul affichage est celui du père qui lit
-     * > dès qu'il se termine, le fils l'accompagne
      */
     int fd;
     fd  = open("../toto.txt", O_RDWR | O_CREAT, 0666);
@@ -418,6 +416,6 @@ void exo11(){
 }
 
 int main(int argc, const char * argv[]) {
-    exo11();
+    exo4();
     return 0;
 }
