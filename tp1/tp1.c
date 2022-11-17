@@ -379,7 +379,7 @@ void exo11(){
         printf("entrez une commande : ");
         scanf("%[^\n]", commande);
         if(strcmp(commande, "exit") == 0){
-            exit(1);
+            exit(9);
         }
         char *token = strtok(commande, " ");
         int i = 0;
@@ -401,13 +401,14 @@ void exo11(){
         printf("avec la terminaison %d (exit code %d)\n",
                *terminaison,
                WEXITSTATUS(*terminaison));
-        free(terminaison);
         sleep(1);
-        if(WEXITSTATUS(*terminaison) == 1){
+        if(WEXITSTATUS(*terminaison) == 9){
             printf("Fin du programme.\n");
+            free(terminaison);
             free(commande);
             exit(0);
         } else{
+            free(terminaison);
             free(commande);
             exo11();
         }
@@ -416,6 +417,6 @@ void exo11(){
 }
 
 int main(int argc, const char * argv[]) {
-    exo4();
+    exo11();
     return 0;
 }
