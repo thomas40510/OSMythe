@@ -11,10 +11,10 @@
 // vous pouvez nommer le programme du premier processus RDV1.C et celui du 2nd RDV2.C par exemple
 // Les 2 programmes doivent être compilés séparément et exécutés séparément sur le shell
 
+struct sembuf Ops[2];
 
 /* retourne -1 en cas d'erreur */
 int P(int semid, int noSem){
-	struct sembuf Ops[1];
 	int ok;
 	
 	// Q- donner les 3 éléments de la structure Ops pour
@@ -31,7 +31,6 @@ int P(int semid, int noSem){
 
 /* retourne -1 en cas d'erreur */
 int V(int semid, int noSem){
-	struct sembuf Ops[1];
 	int ok;
 	
 	// Q- donner les 3 éléments de la structure Ops pour
@@ -50,9 +49,10 @@ int V(int semid, int noSem){
 int main (void){ // à compléter sans oublier de supprimer l'ensemble des sémaphores
 
 	// Q- Il faut d'abord recréer la clé (voir sema.c)
-    int k;
-    k = execl("./sema", "sema", "/tmp", "2", "1", NULL);
-	
+    key_t k;
+    k = ftok("./tmp", 1);
+
+
 	// Q- il faut ensuite ouvrir le semaphore avec semget, à part la clé,
     // les autres arguments doivent être à zéro
 	// car il ne s'agit pas d'une création, mais d'une ouverture
@@ -67,9 +67,8 @@ int main (void){ // à compléter sans oublier de supprimer l'ensemble des séma
 
 
 	// Q- faire appel à P et à V (voir le TD)
-    int v = V(semid, 2);
-    printf("V = %d\n", v);
-    P(semid, 1);
+    V(semid, 1);
+    P(semid, 0);
 
 	
 	// appeler la fonction de RDV, un printf est suffisant.
