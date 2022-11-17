@@ -396,7 +396,7 @@ void exo11(){
         exit(1);
     } else {
         int *terminaison = malloc(sizeof(int));
-        pid_t res = waitpid(processus, terminaison, WCONTINUED);
+        pid_t res = waitpid(processus, terminaison, 0);
         printf("/// fin du PID %d ///\n", res);
         printf("avec la terminaison %d (exit code %d)\n",
                *terminaison,

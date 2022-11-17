@@ -26,7 +26,7 @@ int P(int semid, int noSem){
 	
 	// Q- faire appel à la fonction semop pour réaliser l'opération P, la variable OK récupère la valeur de retour
     ok = semop(semid, Ops, 1);
-    return -1;
+    return ok;
 }
 
 /* retourne -1 en cas d'erreur */
@@ -43,36 +43,38 @@ int V(int semid, int noSem){
 	
 	// Q- faire appel à la fonction semop pour réaliser l'opération V, la variable OK récupère la valeur de retour
     ok = semop(semid, Ops, 1);
-    return -1;
+    return ok;
 }
 
 
 int main (void){ // à compléter sans oublier de supprimer l'ensemble des sémaphores
 
 	// Q- Il faut d'abord recréer la clé (voir sema.c)
-    key_t k;
-    k = ftok("sema.c", 1);
-	
+    int k;
+    k = execl("./sema", "sema", "/tmp", "2", "1", NULL);
 	
 	// Q- il faut ensuite ouvrir le semaphore avec semget, à part la clé,
     // les autres arguments doivent être à zéro
 	// car il ne s'agit pas d'une création, mais d'une ouverture
     int semid;
     semid = semget(k, 0, 0);
-	
-	
-	// Q- faire l'appel à sleep() afin d'avoir des attentes de différentes durées pour les 2 processus
-    sleep(1);
-	
-	// Q- faire appel à P et à V (voir le TD)
-    P(semid, 0);
+    printf("semid = %d\n", semid);
 
-    V(semid, 0);
-	
+    printf("I am RDV2, I'm going to sleep\n");
+
+    // Q- faire l'appel à sleep() afin d'avoir des attentes de différentes durées pour les 2 processus
+    sleep(4);
+
+
+	// Q- faire appel à P et à V (voir le TD)
+    int v = V(semid, 2);
+    printf("V = %d\n", v);
+    P(semid, 1);
+
 	
 	// appeler la fonction de RDV, un printf est suffisant.
 
-    printf("RDV\n");
+    printf("RDV2\n");
     semctl(semid, 0, IPC_RMID);
     return 0;
 
