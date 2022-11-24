@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 11)
 include_directories(.)
 
 add_executable(tp2
-        RDV.c)
+        RDV.c redacteur.c lecteur.c)

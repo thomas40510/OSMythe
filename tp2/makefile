@@ -3,5 +3,5 @@ default:
 	gcc -o RDV2 RDV2.c
 
 run:
-	./RDV1
-	./RDV2
+	osascript -e 'tell app "Terminal" to do script "./RDV1"'
+	osascript -e 'tell app "Terminal" to do script "./RDV2"'
