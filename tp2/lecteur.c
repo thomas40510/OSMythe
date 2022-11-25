@@ -53,16 +53,19 @@ int main (void){
     int nbLecteurs;
     fscanf(n, "%d", &nbLecteurs);
 
+    /*
+     * New reader
+     */
     P(semid, mutex);
     nbLecteurs++;
     rewind(n);
     fprintf(n, "%d", nbLecteurs);
-    if(nbLecteurs == 1){
+    if(nbLecteurs == 1){ // first reader takes the right to access data
         P(semid, donnee);
     }
     V(semid, mutex);
 
-    //read file.txt
+    /* Open file and read */
     FILE *f = fopen("file.txt", "r");
     char c;
     while((c = fgetc(f)) != EOF){
@@ -70,17 +73,20 @@ int main (void){
     }
     fclose(f);
 
+    /*
+     * End of reading
+     */
     P(semid, mutex);
     nbLecteurs--;
     rewind(n);
     fprintf(n, "%d", nbLecteurs);
     fclose(n);
-    if(nbLecteurs == 0){
+    if(nbLecteurs == 0){ // last reader releases the access to data
         V(semid, donnee);
     }
     V(semid, mutex);
 
-    semctl(semid, mutex, IPC_RMID);
+    semctl(semid, mutex, IPC_RMID); // remove mutex
 
     return 0;
 

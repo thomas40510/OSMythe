@@ -47,17 +47,16 @@ int main (void){
     semid = semget(k, 0, 0);
     printf("semid = %d\n", semid);
 
-    // P and V
-    P(semid, donnee);
+    P(semid, donnee); /* take access to shared data */
     //write in file file.txt
     FILE *f = fopen("file.txt", "w");
     fprintf(f, "Hello World!");
     fclose(f);
-    sleep(5);
-    V(semid, donnee);
+    sleep(10);
+    V(semid, donnee); /* release access to shared data */
 
 
-    semctl(semid, donnee, IPC_RMID);
+    semctl(semid, donnee, IPC_RMID); // remove semaphore
 
     return 0;
 
