@@ -18,9 +18,9 @@ LDFLAGS=' '
 
 systeme=`uname`
 
-if test $systeme = "Linux"
+if test $systeme = "Darwin"
 then
-#---- Linux ----
+#---- Darwin ----
 
 #CCFLAGS=-I$INCDIR
 CCFLAGS='-W -Wall -Werror '$CCFLAGS
@@ -117,7 +117,7 @@ strLength()
  then expr "$1" : '.*'
       systemeTrouve=1
  fi
- if test $systeme = "Linux"
+ if test $systeme = "Darwin"
  then expr length $1
       systemeTrouve=1
  fi
@@ -140,7 +140,7 @@ echoNoNL()
  then printf $*
       systemeTrouve=1
  fi
- if test $systeme = "Linux"
+ if test $systeme = "Darwin"
  then echo -n $*
       systemeTrouve=1
  fi
