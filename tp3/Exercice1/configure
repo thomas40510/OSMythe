@@ -1,0 +1,374 @@
+#!/bin/sh
+
+#----------------- Fichiers et librairies -----------
+
+TARGET='pipe pipeWc'
+
+FILESpipe='pipe.c'
+FILESpipeWc='pipeWc.c'
+
+#----------------- Options de compilation -----------
+
+INCDIR='.'
+
+#----------------- Options d'edition des liens -----------
+
+LDFLAGS=' '
+
+#------- Options de compilation  propres au systeme -----------
+
+systeme=`uname`
+
+if test $systeme = "Linux"
+then
+#---- Linux ----
+
+#CCFLAGS=-I$INCDIR
+CCFLAGS='-W -Wall -Werror '$CCFLAGS
+CCFLAGS=$CCFLAGS' -pedantic'
+DEPOPT='-M'
+CCC='gcc'
+
+else
+if test $systeme = "SunOS"
+then
+#---- SunOS ----
+
+#CCFLAGS=-I$INCDIR
+CCFLAGS='-W -Wall -Werror '$CCFLAGS 
+CCFLAGS=$CCFLAGS' -pedantic'
+DEPOPT='-M'
+CCC='gcc'
+else
+if test $systeme = "CYGWIN_NT-5.1"
+then
+#---- CYGWIN_NT-5.1 ----
+
+#CCFLAGS=-I$INCDIR
+CCFLAGS='-W -Wall -Werror '$CCFLAGS 
+CCFLAGS=$CCFLAGS' -pedantic'
+DEPOPT='-M'
+CCC='gcc'
+
+else echo "System $systeme inconnu"
+     exit 1
+fi
+fi
+fi
+
+#----------------- Basename comprend le . ? ----------------
+if test $systeme = "SunOS"
+then BaseName=/usr/xpg4/bin/basename
+else BaseName=basename
+fi
+ 
+#----------------- L'option -e de echo existe ?  ----------------
+
+recho=`echo -e`
+
+if test "$recho" = "-e"
+then echoOptionForTab=''    # echo "\t" permet d'afficher tab
+else echoOptionForTab='-e'  # echo -e "\t" permet d'afficher tab
+fi
+
+echo $echoOptionForTab
+
+#----------------- Nom du fichier genere ------------------------
+
+makefile=makefile
+
+#----------------- Extension des fichiers -----------------------
+
+extension=".c"
+
+#----------------- Au moins une cible existe ? ------------------
+
+if test -z "$TARGET"
+then echo
+     echo "Attention, aucune cible (TARGET) n'est indiquee !"
+     exit 1;
+fi
+
+#----------------- INCDIR (ou trouver les .h) ? -----------------
+if test -z "$INCDIR"
+then echo
+     echo "Attention, INCDIR non indique, par defaut : INCDIR='.'"
+     INCDIR='.'
+fi
+
+#-------- Il ne faut pas de cible avec extension .c  -----------
+
+error=0
+for i in $TARGET
+do
+     if test $i != `$BaseName $i $extension`
+     then echo "Attention, la cible $i est un fichier source !!"
+          error=1
+     fi
+done
+if test $error -ne 0
+then exit 1
+fi
+
+#--- Pour chaque cible,
+#--- il faut verifier si la variable FILEScible est vide ---
+#---                            ET
+#--- il faut verifier la variable FILEScible n'est composee que de .c ---
+
+strLength()
+{
+ systeme=`uname`
+ systemeTrouve=0
+ if test $systeme = "SunOS"
+ then expr "$1" : '.*'
+      systemeTrouve=1
+ fi
+ if test $systeme = "Linux"
+ then expr length $1
+      systemeTrouve=1
+ fi
+ if test $systeme = "CYGWIN_NT-5.1"
+ then expr length $1
+      systemeTrouve=1
+ fi
+
+ if test $systemeTrouve -eq 0
+ then echo Systeme inconnu
+ fi
+}                 # Fin de strLength
+
+echoNoNL()
+{
+ systeme=`uname`
+ systemeTrouve=0
+
+ if test $systeme = "SunOS"
+ then printf $*
+      systemeTrouve=1
+ fi
+ if test $systeme = "Linux"
+ then echo -n $*
+      systemeTrouve=1
+ fi
+ if test $systeme = "CYGWIN_NT-5.1"
+ then echo -n $*
+      systemeTrouve=1
+ fi
+
+ if test $systemeTrouve -eq 0
+ then echo Systeme inconnu
+ fi
+}                 # Fin de echoNoNL
+
+
+
+printFilesList()
+{
+ #nbEspaces=`expr index $1 =`
+     strLocal=`expr $1 : '\(.*\)='`
+     nbEspaces=`strLength $strLocal`
+     nbEspaces=`expr $nbEspaces + 1`
+
+ strLocalEspaces=" "
+ iLocal=0
+
+ while test $iLocal -ne $nbEspaces
+ do
+    strLocalEspaces=$strLocalEspaces" "
+    iLocal=`expr $iLocal + 1`
+ done
+
+ echo $1
+ shift
+ while test $# -ne 0
+ do
+   echo "$strLocalEspaces"$1           # Il faut mettre les "" !!
+   shift
+ done
+}                 # Fin de printFilesList()
+
+for i in $TARGET
+do
+     echo "--------------- FILES$i ---------------"
+
+     findFileList="echo \$`echo FILES$i`"
+     fileList=`eval $findFileList`
+
+     if test -z "$fileList"
+     then echo "Attention, FILES$i est vide => FILES$i=$i$extension"
+          com="FILES$i=$i$extension"
+          eval $com
+     fi
+
+     findFileList="echo \$`echo FILES$i`"
+     fileList=`eval $findFileList`
+
+     realFileList=""
+     for j in $fileList
+     do
+        if test $j = `$BaseName $j $extension`
+        then echo "Attention, dans FILES$i, $j est ignore (!= $extension)... "
+        else 
+             if test -z "$realFileList"
+             then realFileList=$j
+             else realFileList=$realFileList" "$j
+             fi
+        fi
+     done
+     if test -z "$realFileList"
+     then 
+          echo "... Donc , FILES$i est vide => FILES$i=$i$extension"
+          realFileList="$i$extension"
+     fi
+
+     echo
+     com="FILES$i=\"$realFileList\""
+     printFilesList $com                # Avant : echo $com
+     echo
+     echo "---------------------------------------"
+     eval $com
+done
+
+#-------- Pour generer les dependances, il faut des fichiers ! --------------
+
+sourceList=`ls *$extension`
+
+if test -z "$sourceList"
+then echo "Il n'y a aucun source ($extension) dans le repertoire courant"
+     exit 1
+fi
+
+#----------------- generation automatique  -------------------
+putFilesListInMakefile()
+{
+ strLocal=""
+ for iLocal in $1
+ do
+     strLocal=$strLocal" "$iLocal
+ done
+ set $strLocal
+ echoNoNL $1                                                      >> $makefile
+ shift
+ while test $# -ne 0
+ do
+   echo " \\"                                                     >> $makefile
+   echoNoNL $echoOptionForTab "\t$1"                              >> $makefile
+   shift
+ done
+ echo                                                             >> $makefile
+}                 # Fin de printFilesList()
+
+if test -f $makefile
+then make -f $makefile clear
+fi
+rm -f $makefile
+
+echo
+echo "============= GENERATION D'UN FICHIER $makefile ============"
+echo
+echo Generation pour $systeme
+echo
+
+
+echo "#----- Fichier genere automatiquement sous `uname` ------"  >> $makefile
+echo "#----- `date`"                                              >> $makefile
+echo                                                              >> $makefile
+
+echo "#-----"                                                     >> $makefile
+echo "INCDIR=$INCDIR"                                             >> $makefile
+echo "CCFLAGS=$CCFLAGS -I\$(INCDIR) -I."                          >> $makefile
+echo "LDFLAGS=$LDFLAGS"                                           >> $makefile
+echo "DEPOPT=$DEPOPT"                                             >> $makefile
+echo "CCC=$CCC"                                                   >> $makefile
+echo "#-----"                                                     >> $makefile
+echo                                                              >> $makefile
+
+echo "#-------------  Appli  --------------"                      >> $makefile
+echo                                                              >> $makefile
+
+
+putFilesListInMakefile "TARGET=$TARGET"
+echo                                                              >> $makefile
+
+for i in $TARGET
+do
+    findFileList="echo \$`echo FILES$i`"
+    fileList=`eval $findFileList`
+
+    putFilesListInMakefile "FILES$i=$fileList"                    >> $makefile
+    echo                                                          >> $makefile
+    findFalgList="echo \$`echo LDFLAGS$i`"
+    falgList=`eval $findFalgList`
+    echo "LDFLAGS$i=\$(LDFLAGS) $falgList"                        >> $makefile
+    echo                                                          >> $makefile
+done
+
+for i in $TARGET
+do
+    echo "OBJECTS$i=\$(FILES$i:$extension=.o)"                    >> $makefile
+    echo                                                          >> $makefile
+done
+
+echo "#-------------  Appli  --------------"                      >> $makefile
+echo                                                              >> $makefile
+
+echo "all: \$(TARGET)"                                            >> $makefile
+
+echo "#-------------  Appli  --------------"                      >> $makefile
+echo                                                              >> $makefile
+
+for i in $TARGET
+do
+
+cat << !                                                          >> $makefile
+$i : \$(OBJECTS$i)
+	\$(CCC) \$(OBJECTS$i) \\
+		-o $i \$(LDFLAGS$i)
+!
+
+done
+
+echo "#------------------------------------"                      >> $makefile
+echo                                                              >> $makefile
+
+echo "$extension.o :"                                             >> $makefile
+cat << !                                                          >> $makefile
+	\$(CCC) \$(CCFLAGS) -c \$< \\
+		-o \$*.o
+ 
+dep :
+	@echo "======== Mise a jour des dependances : .depend ========"
+	@rm -f .depend
+	@for i in *$extension ; do \\
+	echo \$\$i ; \\
+	\$(CCC) \$(DEPOPT) \$(CCFLAGS) \$\$i > .tmpdepend ; \\
+	OBJNAME=\`echo \$\$i | sed -e s%\\\\\\$extension%.o% \` ; \\
+	cat .tmpdepend | \\
+	sed -e s%\`$BaseName \$\$i $extension\`\\\\\.o%\$\$OBJNAME% \
+        >> .depend ; \\
+	echo  >> .depend ; \\
+	done
+	@rm -f .tmpdepend
+ 
+CLEANING=rm -f *.o core a.out \$(TARGET) *.exe .depend
+CONSEIL=echo Penser a faire : make -f $makefile dep
+ 
+clear :
+	@\$(CLEANING)
+	@echo
+	@\$(CONSEIL)
+	@echo
+clean :
+	\$(CLEANING)
+	@echo
+	@\$(CONSEIL)
+	@echo
+
+sinclude .depend
+
+!
+
+echo
+echo "Et execution de : make -f $makefile dep"
+echo
+make -f $makefile dep
