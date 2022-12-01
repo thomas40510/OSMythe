@@ -11,6 +11,8 @@
 
 /* Exercice 1 */
 
+/* Thread functions
+ * ================ */
 void *thread_function(void *arg) {
     int val = *(int*) arg;
     while(1){
@@ -32,12 +34,32 @@ void *thread_function_exit(void *arg) {
 
 void *thread_function_texit(void *arg) {
     int val = *(int*) arg;
-    while(1){
+    int i = 1;
+    while(i != 5){
         fprintf(stderr, "New thread with arg %d\n", val);
-        pthread_exit(NULL);
+        sleep(1);
+        i++;
     }
+    pthread_exit(NULL);
 }
 
+void *thread_function_join(void *arg) {
+    /* thread function that sends a value on exit */
+    int val = *(int*) arg;
+    int i = 0;
+    int *ret = malloc(sizeof(int));
+    *ret = val * 3;
+    while(i != 4){
+        //fprintf(stderr, "New thread with arg %d\n", val);
+        sleep(1);
+        i++;
+    }
+    pthread_exit(ret);
+}
+
+
+/* Main functions
+ * ============= */
 
 int main_init(void){ //2.1
     /* Create a thread */
@@ -124,11 +146,39 @@ int main_with_exit(void){ // 2.3.3
         fprintf(stderr, "Main thread\n");
         exit(0);
     }
+}
 
+int main_with_join(void){ // 2.3
+    /*
+     * Create 5 threads and send them their number.
+     * Each thread will exit after 4 iterations and send a value on exit.
+     * Main thread will wait for each thread to exit and print the value sent by each thread.
+     */
+    pthread_t thr;
+
+    int vals[NB_THR]; // allows to send different values to each thread
+    for (int i = 0; i < NB_THR; i++) {
+        vals[i] = i;
+    }
+
+    for(int i = 0; i < NB_THR; i++) {
+        if (pthread_create(&thr, NULL, thread_function_join, (void *) &vals[i]) != 0) {
+            perror("pthread_create");
+            exit(1);
+        }
+        int *ret;
+        pthread_join(thr, (void **) &ret);
+        fprintf(stderr, "Thread %d returned %d\n", i, *ret);
+    }
+
+    while(1){
+        fprintf(stderr, "Main thread\n");
+        sleep(1);
+    }
 }
 
 
 int main(void){
-    main_with_thread_exit();
+    main_with_join();
     return 0;
 }
