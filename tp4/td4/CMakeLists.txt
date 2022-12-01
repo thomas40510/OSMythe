@@ -5,4 +5,4 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(.)
 
-add_executable(td4 td4.c)
+add_executable(td4 td4.2.c)

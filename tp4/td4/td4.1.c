@@ -1,5 +1,6 @@
 /* ===================================================
  * TD4 : Threads / POSIX
+ * Exercice 1
  * ================================================== */
 
 #include <stdio.h>
@@ -8,8 +9,6 @@
 #include <unistd.h>
 
 #define NB_THR 5
-
-/* Exercice 1 */
 
 /* Thread functions
  * ================ */
