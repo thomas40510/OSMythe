@@ -9,14 +9,13 @@
 
 /* Decrire le handler de signal pour SIGUSR1 */
 /* ========================================= */
-void handler(int signum){
-    printf("[I]: Signal %d reçu.\n", signum);
-    exit(0);
+// handle signal SIGUSR1
+void handler(int sig){
+    printf("Signal %d recu par le processus %d\n", sig, getpid());
+    return;
 }
 
-/* ... */
-
-/* Le main */
+/* Main */
 /* ======= */
 
 int main(int argc,char **argv)
@@ -41,7 +40,7 @@ int main(int argc,char **argv)
 
 /* A cause de warnings lorsque le code n'est pas encore la ...*/
 
-    (void)action; (void)fIn; (void)tube; (void)status; (void)pidREAD; (void)pidWC;
+    //(void)action; (void)fIn; (void)tube; (void)status; (void)pidREAD; (void)pidWC;
 
 /* Gestion des signaux */
 /* =================== */
@@ -64,8 +63,6 @@ int main(int argc,char **argv)
         perror("creerZonePartagee");
         exit(1);
     }
-
-/* ... */
 
     ptDeb=(int*)z.debut;    /* *ptDeb <=> *((int*)z.debut) */
 
@@ -116,9 +113,7 @@ int main(int argc,char **argv)
         fIn=fdopen(STDIN_FILENO, "r");
         fscanf(fIn, "%d", ptDeb);
         fclose(fIn);
-        sleep(4);
         kill(getppid(), SIGUSR1);
-        pause();
         exit(0);
     }
 
