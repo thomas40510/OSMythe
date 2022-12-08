@@ -1,7 +1,3 @@
-%! Author = thomasprevost
-%! Date = 08/12/2022
-
-% Preamble
 \documentclass[a4, 11pt]{article}
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
@@ -16,22 +12,76 @@
 \usepackage{pgfplots}
 \usepackage{pgf}
 
+\pagestyle{empty}
+
 %geometry
-\usepackage[margin=1cm]{geometry}
+\usepackage[margin=2cm]{geometry}
 
 
 
 % Document
 \begin{document}
 
-   \include{img/RR}
+   \begin{figure}[h!]
+      \centering
+      \input{img/RRq1}
+      \caption{RR, $q=1$}
+      \label{fig:rr}
+   \end{figure}
 
-   \include{img/RRtp}
+   \begin{table}[ht!]
+      \centering
+      \begin{tabular}{c|c|c|c|c|c|c}
+         s       & A & B & C & D & E & Moy \\ \hline
+         $T_t$   & 1 & 1 & 1 & 1 & 1 & / \\ \hline
+         $T_r$   & 1 & 1 & 1 & 1 & 1 & 1 \\ \hline
+         $T_r / T_s$ & 1 & 1 & 1 & 1 & 1 & 1 \\
+      \end{tabular}
+      \caption{RR, $q=1$}
+      \label{tab:rrq1}
 
-   \include{img/spn}
+   \end{table}
 
-   \include{img/srt}
+   \begin{fig
+      \centering
+      \input{img/RRq4}
+      \caption{RR, $q=4$}
+      \label{fig:rrq4}
+   \end{figure}
 
-   \include{img/hrrn}
+   \begin{fig
+      \centering
+      \input{img/spn}
+      \caption{SPN}
+      \label{fig:spn}
+   \end{figure}
 
+   \begin{fig
+      \centering
+      \input{img/srt}
+      \caption{SRT}
+      \label{fig:srt}
+   \end{figure}
+
+   \begin{figure}[h!]
+      \centering
+      \input{img/hrrn}
+      \caption{HRRN}
+      \label{fig:hrrn}
+   \end{figure}
+   \[\boxed{R = \frac{T_a + T_s}{T_s}} \qquad R_c = \frac{5+4}{4} \qquad R_D = \frac{3+5}{5} \qquad R_E = \frac{1+2}{2}\]
+
+   \begin{figure}
+      \centering
+      \input{img/FBq1}
+      \caption{FB, $q=1$}
+      \label{fig:fbq1}
+   \end{figure}
+
+   \begin{figure}
+      \centering
+      \input{img/FBqi}
+      \caption{FB, $q=2^i$}
+      \label{fig:fbqi}
+   \end{figure}
 \end{document}
