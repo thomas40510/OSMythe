@@ -1,12 +1,16 @@
 \begin{tikzpicture}[scale=.8]
    \foreach \i in {0,...,20}
-   \draw[dashed, thin] (\i,0) -- (\i,-5);
+   \draw[dashed, help lines] (\i,0) -- (\i,-5);
 
    \node (A) at (-.5,-.5) {A};
    \node (B) at (-.5,-1.5) {B};
    \node (C) at (-.5,-2.5) {C};
    \node (D) at (-.5,-3.5) {D};
    \node (E) at (-.5,-4.5) {E};
+
+   \foreach \p in {0,...,4}
+   \draw[red] (2+\p, -\p) --++ (0,-1);
+
 
    \draw[fill=blue] (0,0) rectangle (2,-1) rectangle (3,-2) (3,0) rectangle (4,-1);
    \draw[fill=blue] (4,-1) rectangle (5,-2) rectangle (6,-3) (6,-1) rectangle (7,-2);
