@@ -1,0 +1,173 @@
+\documentclass[a4, 11pt]{article}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{pgfplots}
+\usepackage{pgf}
+
+\pagestyle{empty}
+
+%geometry
+\usepackage[margin=2cm]{geometry}
+
+
+
+% Document
+\begin{document}
+
+   \section*{Round-Robin}
+      \begin{figure}[h!]
+         \centering
+         \input{img/RRq1}
+         \caption{RR, $q=1$}
+         \label{fig:rr}
+      \end{figure}
+
+      \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 1 & 1 & 1 & 1 & 1 & / \\ \hline
+            $T_r$   & 1 & 1 & 1 & 1 & 1 & 1 \\ \hline
+            $T_r / T_s$ & 1 & 1 & 1 & 1 & 1 & 1 \\
+         \end{tabular}
+         \caption{RR, $q=1$}
+         \label{tab:rrq1}
+      \end{table}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/RRq4}
+         \caption{RR, $q=4$}
+         \label{fig:rrq4}
+      \end{figure}
+
+      \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 4 & 18 & 17 & 20 & 15 & / \\ \hline
+            $T_r$   & 4 & 16 & 13 & 14 & 7 & 10.8 \\ \hline
+            $T_r / T_s$ & 4/3 & 8/3 & 13/4 & 14/5 & 7/2 & 2.71 \\
+         \end{tabular}
+         \caption{RR, $q=4$}
+         \label{tab:rrq4}
+      \end{table}
+
+      \newpage
+
+   \section*{SPN}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/spn}
+         \caption{SPN}
+         \label{fig:spn}
+      \end{figure}
+
+      \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 3 & 9 & 15 & 20 & 11 & / \\ \hline
+            $T_r$   & 3 & 7 & 11 & 14 & 3 & 7.6 \\ \hline
+            $T_r / T_s$ & 1 & 7/6 & 11/4 & 14/6 & 3/2 & 1.84 \\
+         \end{tabular}
+         \caption{SPN}
+         \label{tab:spn}
+      \end{table}
+
+   \section*{SRT}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/srt}
+         \caption{SRT}
+         \label{fig:srt}
+      \end{figure}
+
+      \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 3 & 15  &   8  &  20  &  10 & / \\ \hline
+            $T_r$   & 3  &13  &   4   & 14   & 2  &   7.2 \\ \hline
+            $T_r / T_s$ & 1  &13/6  & 1  &  14/5 & 1  &   1.59 \\
+         \end{tabular}
+         \caption{SRT}
+         \label{tab:srt}
+      \end{table}
+
+\newpage
+
+   \section*{HRRN}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/hrrn}
+         \caption{HRRN}
+         \label{fig:hrrn}
+      \end{figure}
+      \[\boxed{R = \frac{T_a + T_s}{T_s}} \qquad R_c = \frac{5+4}{4} \qquad R_D = \frac{3+5}{5} \qquad R_E = \frac{1+2}{2}\]
+
+            \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 3 & 9  &   13 &   20   & 19 & / \\ \hline
+            $T_r$   & 3  &7 &    9  &   14  &  7   &  8 \\ \hline
+            $T_r / T_s$ & 1 & 3/6 &  9/4 &  14/5 & 7/2 &  2.34 \\
+         \end{tabular}
+         \caption{HRRN}
+         \label{tab:hrrn}
+      \end{table}
+
+\newpage
+
+   \section*{FB}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/FBq1}
+         \caption{FB, $q=1$}
+         \label{fig:fbq1}
+      \end{figure}
+
+                  \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 4  &   20  &  16   & 19   & 11 & / \\ \hline
+            $T_r$   & 4    & 18  &  12  &  13  &  3   &  10 \\ \hline
+            $T_r / T_s$ & 4/3 &  18/6&  12/4 & 13/5  &3/2 &  2.294 \\
+         \end{tabular}
+         \caption{FB, $q=1$}
+         \label{tab:fb1}
+      \end{table}
+
+      \begin{figure}[h!]
+         \centering
+         \input{img/FBqi}
+         \caption{FB, $q=2^i$}
+         \label{fig:fbqi}
+      \end{figure}
+
+               \begin{table}[ht!]
+         \centering
+         \begin{tabular}{c|c|c|c|c|c|c}
+            & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{Moy} \\ \hline
+            $T_t$   & 4   &  17  &  18  &  20  &  14 & / \\ \hline
+            $T_r$   &  4   &  15   & 14  &  14  &  6  &   10.6 \\ \hline
+            $T_r / T_s$ & 4/3  & 15/6 & 14/4 & 14/5 & 6/2  & 2.63 \\
+         \end{tabular}
+         \caption{FB, $q=2^i$}
+         \label{tab:fbi}
+      \end{table}
+\end{document}
