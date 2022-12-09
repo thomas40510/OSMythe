@@ -79,11 +79,10 @@ void *mult(void *data){
     for(iter = 0; iter < prod.nbIter; iter++){
         /* Await mult clearance for new iteration */
         pthread_mutex_lock(&prod.mutex);
-        while(prod.state != STATE_MULT){
+        while(prod.state != STATE_MULT || prod.pendingMult[index] == 0){
             pthread_cond_wait(&prod.cond, &prod.mutex);
         }
-
-        fprintf(stderr, "iter %zu\n", iter);
+        pthread_mutex_unlock(&prod.mutex);
 
         fprintf(stderr, "--> Mult %zu\n", index);
 
@@ -95,7 +94,9 @@ void *mult(void *data){
                 index, prod.v1[index], prod.v2[index], prod.v3[index]);
 
         /* mark current mult as done */
+        pthread_mutex_lock(&prod.mutex);
         prod.pendingMult[index] = 0;
+
 
         /* Check if all the multiplications are done */
         if(nbPendingMult(&prod) == 0){
@@ -120,6 +121,7 @@ void *add(void *data){
         while(prod.state != STATE_ADD){
             pthread_cond_wait(&prod.cond, &prod.mutex);
         }
+        pthread_mutex_unlock(&prod.mutex);
         fprintf(stderr, "--> add\n");
 
         /* exec add, simulate long operation and print result */
@@ -134,7 +136,6 @@ void *add(void *data){
         /* give the print clearance */
         prod.state = STATE_PRINT;
         pthread_cond_broadcast(&prod.cond);
-        pthread_mutex_unlock(&prod.mutex);
     }
     fprintf(stderr, "Quitting add()\n");
     return(data);
