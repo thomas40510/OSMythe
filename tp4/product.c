@@ -63,7 +63,7 @@ void wasteTime(unsigned long ms){
 
 /********** Multiplication **********/
 void *mult(void *data){
-    size_t index;
+    size_t index = 0;
     size_t iter;
 
     /* Get the index of the thread, i.e. index of the first not pending mult */
@@ -83,6 +83,8 @@ void *mult(void *data){
             pthread_cond_wait(&prod.cond, &prod.mutex);
         }
 
+        fprintf(stderr, "iter %zu\n", iter);
+
         fprintf(stderr, "--> Mult %zu\n", index);
 
         /* exec mult, simulate long operation and print result */
@@ -97,6 +99,7 @@ void *mult(void *data){
 
         /* Check if all the multiplications are done */
         if(nbPendingMult(&prod) == 0){
+            fprintf(stderr, "All mult done\n");
             prod.state = STATE_ADD;  // If yes, we go to the addition state
             pthread_cond_broadcast(&prod.cond);
         }
@@ -124,7 +127,7 @@ void *add(void *data){
         for(index = 0; index < prod.size; index++){
             prod.result += prod.v3[index];
         }
-        //wasteTime(100+rand()%100);
+        wasteTime(100+rand()%100);
 
         fprintf(stderr, "<-- End add : %.3g\n", prod.result);
 
@@ -163,6 +166,9 @@ int main(int argc, char **argv){
     pthread_mutex_init(&prod.mutex, NULL);
     pthread_cond_init(&prod.cond, NULL);
 
+    prod.mutex = (pthread_mutex_t) PTHREAD_MUTEX_INITIALIZER;
+    prod.cond = (pthread_cond_t) PTHREAD_COND_INITIALIZER;
+
     /* Dynamic allocation of vectors */
     prod.v1 = (double *) malloc(prod.size * sizeof(double));
     prod.v2 = (double *) malloc(prod.size * sizeof(double));
@@ -186,7 +192,6 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
     }
-
     /* Create add thread */
     pthread_create(&addTh, NULL, add, NULL);
 
@@ -203,7 +208,6 @@ int main(int argc, char **argv){
         }
 
         /* Allow mult threads to start */
-        //initPendingMult(&prod);
         prod.state = STATE_MULT;
         pthread_cond_broadcast(&prod.cond);
 
