@@ -11,8 +11,14 @@
 /* ========================================= */
 // handle signal SIGUSR1
 void handler(int sig){
-    printf("Signal %d recu par le processus %d\n", sig, getpid());
-    return;
+    if(sig == SIGUSR1) {
+        fprintf(stderr, "SIGUSR1 received\n");
+        return;
+    } else {
+        fprintf(stderr, "Signal %d received\n", sig);
+        pause();
+    }
+    pause();
 }
 
 /* Main */
