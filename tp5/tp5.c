@@ -30,8 +30,8 @@ void exo2(void){
     exo1();
 }
 
-int main(int argc, char *argv[])
-{
-    exo1();
+
+int main(int argc, char *argv[]){
+    exo2();
     return 0;
 }
