@@ -1,3 +1,90 @@
 # OS TD n°6
 
+```C
+typedef struct processus{
+    char *pt_mot_etat;
+    int pid;
+    int taille;
+    int etat_uc;
+    int etat_mem;
+    char *pt_mem;
+    char *pt_disque;
+    time d_swap;
+    int priorite;
+    int proc_suiv;
+} PROCESSUS, *PT_PROCESSUS;
+```
+
 ## Exercice 1
+
+**Conditions logiques _swapin_** :
+- CPU :
+    - le processus n'est pas en cours d'exécution
+    - le processus prêt ou bloqué
+- Mémoire : 
+    - le processus est non résident (sinon il est déjà en mémoire)
+
+**Conditions _swapout_** :
+- CPU : 
+  - le processus n'est pas en cours d'exécution
+  - le processus est bloqué ou prêt
+- Mémoire : 
+  - le processus est résident en mémoire
+
+
+## Exercice 2
+**Critères de priorisation du processus à _swapin_** :
+1. état prêt (on est sûrs qu'il va s'exécuter)
+   - priorité la plus élevée
+     1) valeur de `d_swap` la plus faible (équité)
+     2) taille du processus la plus faible (efficacité)
+   
+2. état bloqué
+   1) taille la plus faible
+   2) `d_swap` la plus faible
+   3) priorité la plus élevée
+
+**Critères de priorisation du processus à _swapout_** :
+1. état bloqué
+   1) taille la plus grande
+   2) priorité la plus faible 
+
+2. état prêt
+   1) taille la plus grande
+   2) priorité la plus faible
+
+
+## Exercice 3
+```C
+main() {
+    int noProcIn, noProcOut;
+    sema reveil_swap = 0;
+    int place_en_memoire = 1;
+    while (1){
+        while (place_en_memoire){
+            noProcIn = rechercherProcessusAEntrer();
+            if (noProcIn < 0){
+                etat_swap = INACTIF;
+                P(reveil_swap);
+            } else {
+                if (swapin(noProcIn) != 0){
+                    place_en_memoire = 0;
+                }
+            }
+        }
+        while (!place_en_memoire){
+            noProcOut = rechercherProcessusASortir();
+            if (noProcOut < 0){
+                etat_swap = INACTIF;
+                P(reveil_swap);
+            } else {
+                swapout(noProcOut);
+                place_en_memoire = 1;
+                }
+            }
+        }
+    }
+}
+
+```
+
