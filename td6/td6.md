@@ -102,3 +102,7 @@ Interruption_horloge_swap:
         V(reveil_swap);
     }
 ```
+
+_NB_ : en réalité, on utilise des seuils pour déterminer le swapin et le swapout.
+
+## Exercice 4
