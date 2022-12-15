@@ -172,9 +172,6 @@ int swapout(int noProc){
 > - Nombre de pages réelles : 16
 
 Processus P1 : 
-<div style="margin-left: auto;
-            margin-right: auto;
-            width: 30%">
 
 |  N° page virtuelle  | N° page réelle | Présent en mémoire  |
 |:-------------------:|:--------------:|:-------------------:|
@@ -185,9 +182,14 @@ Processus P1 :
 |          4          |       1        |          1          |
 |          5          |       3        |          0          |
 
-</div>
 
 ### Exercice 5
 1) on peut imaginer la structure d'adressage suivante :
     > - 4 bits pour le numéro de page
-    > - 
+    > - 9 bits pour l'offset
+    
+    On a donc une adresse physique de 13 bits.
+2) Espace mémoire virtuel occupé par P1 : 
+   > 6 pages * 512 octets = 3072 octets
+3) Espace mémoire réel occupé par P1 :
+    > 4 pages * 512 octets = 2048 octets
