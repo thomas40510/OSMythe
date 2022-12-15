@@ -15,7 +15,8 @@ typedef struct processus{
 } PROCESSUS, *PT_PROCESSUS;
 ```
 
-## Exercice 1
+## SWAP
+### Exercice 1
 
 **Conditions logiques _swapin_** :
 - CPU :
@@ -32,7 +33,7 @@ typedef struct processus{
   - le processus est résident en mémoire
 
 
-## Exercice 2
+### Exercice 2
 **Critères de priorisation du processus à _swapin_** :
 1. état prêt (on est sûrs qu'il va s'exécuter)
    - priorité la plus élevée
@@ -53,7 +54,7 @@ typedef struct processus{
    1) taille la plus grande
    2) priorité la plus faible
 
-## Exercice 3
+### Exercice 3
 ```c
 main() {
     int noProcIn, noProcOut;
@@ -78,7 +79,7 @@ main() {
         /* la mémoire est pleine */
         while (!place_en_memoire){
             /* on cherche le processus à swapout (priorisation) */
-            noProcOut = rechercherProcessusASortir();
+            noProcOut = rechercherProcessusARetirer();
             if (noProcOut < 0){
                 /* pas de processus à swapout, on endort le swapper */
                 etat_swap = INACTIF;
@@ -95,6 +96,7 @@ main() {
 ```
 
 ```c
+/* réveil périodique du swapper */
 Interruption_horloge_swap:
     if (etat_swap == INACTIF){
         /* on réveille le swapper */
@@ -105,4 +107,63 @@ Interruption_horloge_swap:
 
 _NB_ : en réalité, on utilise des seuils pour déterminer le swapin et le swapout.
 
-## Exercice 4
+### Exercice 4
+#### Fonctions à dipo:
+```c
+char *allouerZone(int taille);
+int libererZone(int taille, char *pt_mem):
+
+int lireDisque(char *pt_disque, char *pt_mem, int nb_octets);
+int ecrireDisque(char *pt_disque, char *pt_mem, int nb_octets);
+
+int RechercherProcessusAEntrer();
+int RechercherProcessusARetirer();
+```
+
+#### Fonction `swapin`:
+```c
+int swapin(int noProc){
+    taille = PROCESSUS[noProc].taille;
+    /* allocation de la zone mémoire */
+    int *zone;
+    zone = allouerZone(taille);
+    PROCESSUS[noProc].pt_mem = zone;
+    if (PROCESSUS[noProc].pt_mem == NULL){
+        /* pas de place en mémoire */
+        return -1;
+    }
+    /* lecture espace de swap */
+    if (lireDisque(PROCESSUS[noProc].pt_disque, 
+                   PROCESSUS[noProc].pt_mem, taille) != 0){
+        /* erreur de lecture */
+        libererZone(taille, pt_mem);
+        return -1;
+    }
+    /* mise à jour des champs du processus */
+    PROCESSUS[noProc].etat_mem = RESIDENT;
+    PROCESSUS[noProc].pt_mem = pt_mem;
+    PROCESSUS[noProc].d_swap = now();
+    return 0;
+}
+```
+
+#### Fonction `swapout`:
+```c
+int swapout(int noProc){
+    int taille = PROCESSUS[noProc].taille;
+    /* écriture sur disque */
+    if (ecrireDisque(PROCESSUS[noProc].pt_disque, 
+                     PROCESSUS[noProc].pt_mem, taille) != 0){
+        /* erreur d'écriture */
+        return -1;
+    }
+    /* libération de la zone mémoire */
+    libererZone(taille, PROCESSUS[noProc].pt_mem);
+    /* mise à jour des champs du processus */
+    PROCESSUS[noProc].etat_mem = NON_RESIDENT;
+    PROCESSUS[noProc].pt_mem = NULL;
+    PROCESSUS[noProc].d_swap = now();
+    return 0;
+}
+```
+
