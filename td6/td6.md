@@ -1,6 +1,6 @@
 # OS TD n°6
 
-```C
+```c
 typedef struct processus{
     char *pt_mot_etat;
     int pid;
@@ -53,31 +53,38 @@ typedef struct processus{
    1) taille la plus grande
    2) priorité la plus faible
 
-
 ## Exercice 3
-```C
+```c
 main() {
     int noProcIn, noProcOut;
     sema reveil_swap = 0;
     int place_en_memoire = 1;
     while (1){
+        /* la mémoire comporte une place libre */
         while (place_en_memoire){
+            /* on cherche le processus à swapin (priorisation) */
             noProcIn = rechercherProcessusAEntrer();
             if (noProcIn < 0){
+                /* pas de processus à swapin, on endort le swapper */
                 etat_swap = INACTIF;
                 P(reveil_swap);
             } else {
+                /* on swapin le processus, on prend la place mémoire */
                 if (swapin(noProcIn) != 0){
                     place_en_memoire = 0;
                 }
             }
         }
+        /* la mémoire est pleine */
         while (!place_en_memoire){
+            /* on cherche le processus à swapout (priorisation) */
             noProcOut = rechercherProcessusASortir();
             if (noProcOut < 0){
+                /* pas de processus à swapout, on endort le swapper */
                 etat_swap = INACTIF;
                 P(reveil_swap);
             } else {
+                /* on swapout le processus, on libère la place mémoire */
                 swapout(noProcOut);
                 place_en_memoire = 1;
                 }
@@ -85,6 +92,13 @@ main() {
         }
     }
 }
-
 ```
 
+```c
+Interruption_horloge_swap:
+    if (etat_swap == INACTIF){
+        /* on réveille le swapper */
+        etat_swap = ACTIF;
+        V(reveil_swap);
+    }
+```
