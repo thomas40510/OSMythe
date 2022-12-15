@@ -15,7 +15,7 @@ typedef struct processus{
 } PROCESSUS, *PT_PROCESSUS;
 ```
 
-## SWAP
+## 1. SWAP
 ### Exercice 1
 
 **Conditions logiques _swapin_** :
@@ -108,7 +108,7 @@ Interruption_horloge_swap:
 _NB_ : en réalité, on utilise des seuils pour déterminer le swapin et le swapout.
 
 ### Exercice 4
-#### Fonctions à dipo:
+#### Fonctions à dispo:
 ```c
 char *allouerZone(int taille);
 int libererZone(int taille, char *pt_mem):
@@ -167,3 +167,27 @@ int swapout(int noProc){
 }
 ```
 
+## 2. Pagination
+> - Taille des pages : 512 octets
+> - Nombre de pages réelles : 16
+
+Processus P1 : 
+<div style="margin-left: auto;
+            margin-right: auto;
+            width: 30%">
+
+|  N° page virtuelle  | N° page réelle | Présent en mémoire  |
+|:-------------------:|:--------------:|:-------------------:|
+|          0          |       2        |          1          |
+|          1          |       3        |          1          |
+|          2          |       0        |          1          |
+|          3          |       2        |          0          |
+|          4          |       1        |          1          |
+|          5          |       3        |          0          |
+
+</div>
+
+### Exercice 5
+1) on peut imaginer la structure d'adressage suivante :
+    > - 4 bits pour le numéro de page
+    > - 
