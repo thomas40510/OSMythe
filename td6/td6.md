@@ -193,3 +193,14 @@ Processus P1 :
    > 6 pages * 512 octets = 3072 octets
 3) Espace mémoire réel occupé par P1 :
     > 4 pages * 512 octets = 2048 octets
+   
+### Exercice 6
+    Adresse virtuelle de P1 : 2058
+1. Adresse virtuelle (no page, déplacement) :
+    > 2058 = 2048 + 10 = 4 * 512 + 10, donc @P1 = (4, 10)
+   
+2. Adresse réelle :
+    > @V = (4, 10) —> @P = (1, 10)
+   
+3. Valeur de l'adresse réelle :
+    > @P(1, 10) = 1 * 512 + 10 = 522, donc @R = 522
