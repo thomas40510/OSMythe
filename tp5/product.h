@@ -32,6 +32,8 @@ int nbPendingMult(Product *prod);
 
 void wasteTime(unsigned long ms);
 
+double *genVectors(double *v1, double *v2, int size);
+
 /********** Multiplication **********/
 void *mult(void *data);
 

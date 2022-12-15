@@ -114,6 +114,14 @@ void *add(void *data) {
     return(data);
 }
 
+double *genVectors(double *v1, double *v2, int size) {
+    size_t i;
+    for(i = 0; i < size; i++){
+        v1[i] = 10.0 * (.5- ((double)rand() / (double)RAND_MAX));
+        v2[i] = 10.0 * (.5- ((double)rand() / (double)RAND_MAX));
+    }
+}
+
 int main(int argc, char **argv){
     size_t i, it;
     pthread_t *multTh;

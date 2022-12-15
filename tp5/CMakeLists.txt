@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 11)
 include_directories(.)
 
 add_executable(tp5
-        product.c product.h)
+        tp5.c product.h)
