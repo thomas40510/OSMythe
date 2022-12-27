@@ -1,8 +1,13 @@
+#define _GNU_SOURCE
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
+#include <sched.h>
 #include <unistd.h>
+
 
 #include "product.h"
 
