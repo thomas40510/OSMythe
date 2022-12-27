@@ -1,7 +1,13 @@
+#define _GNU_SOURCE
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
+#include <sched.h>
+#include <unistd.h>
+
 
 #include "product.h"
 
@@ -48,6 +54,7 @@ void *mult(void *data) {
         }
     }
 
+    fprintf(stderr, "[LOG/I]: mult currently running on CPU %d\n", sched_getcpu());
     fprintf(stderr, "Begin mult %zu\n", index);
 
     for(iter = 0; iter < prod.nbIter; iter++){
@@ -141,6 +148,18 @@ int main(int argc, char **argv){
 
     fprintf(stderr, "nbIter = %zu, size = %zu\n", prod.nbIter, prod.size);
 
+    printf("%ld processeurs disponibles\n", sysconf(_SC_NPROCESSORS_ONLN));
+
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(0, &cpuset);
+    if (sched_setaffinity(0, sizeof(cpu_set_t), &cpuset) == -1) {
+        perror("sched_setaffinity");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("[LOG/I]: main() running on CPU %d\n", sched_getcpu());
+
     prod.state = STATE_WAIT;
     prod.pendingMult = (int *) malloc(prod.size * sizeof(int));
 
@@ -169,13 +188,26 @@ int main(int argc, char **argv){
 
     /* Create mult threads */
     for(i = 0; i < prod.size; i++){
-        if(pthread_create(&multTh[i], NULL, mult, (void *)multData[i]) != 0){
-            perror("pthread_create");
+        /* Balance on available CPUs */
+        int cpu = i % sysconf(_SC_NPROCESSORS_ONLN);
+        cpu_set_t multSet;
+        CPU_ZERO(&multSet);
+        CPU_SET(cpu, &multSet);
+        pthread_create(&multTh[i], NULL, mult, &multData[i]);
+        if (pthread_setaffinity_np(multTh[i], sizeof(cpu_set_t), &multSet) == -1) {
+            perror("pthread_setaffinity_np");
             exit(EXIT_FAILURE);
         }
     }
     /* Create add thread */
+    cpu_set_t addSet;
+    CPU_ZERO(&addSet);
+    CPU_SET(0, &addSet);
     pthread_create(&addTh, NULL, add, NULL);
+    if (pthread_setaffinity_np(addTh, sizeof(cpu_set_t), &addSet) == -1) {
+        perror("pthread_setaffinity_np");
+        exit(EXIT_FAILURE);
+    }
 
     srand(time((time_t *)0)); // Init random generator
 
